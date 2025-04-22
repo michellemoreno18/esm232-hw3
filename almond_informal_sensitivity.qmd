@@ -69,4 +69,74 @@ yield_profit_summary <- compute_profit_fromyield(
 )
 ```
 
-Perform a simple informal sensitivity analysis using at least 2 parameters (price and?)
+# Informal sensitivity analysis using temperature and precipitation
+
+### Define ranges for sensitivity: +/-20%
+
+```{r}
+min_temp_range <- seq(0.8, 1.2, by = 0.1)
+
+precip_range <- seq(0.8, 1.2, by = 0.1)
+```
+
+### Expand grid of combinations
+
+```{r}
+sensitivity_grid <- expand.grid(
+  temp_factor = min_temp_range,
+  precip_factor = precip_range
+)
+```
+
+### Compute scenarios
+
+```{r}
+sensitivity_results <- sensitivity_grid %>%
+  mutate(results = pmap(list(temp_factor, precip_factor), function(tf, pf) {
+    compute_profit_fromyield(
+      min_temp = clim_inputs$feb_tmin_c * tf,
+      P = clim_inputs$jan_precip * pf,
+      year = clim_inputs$year
+    )
+  })) %>%
+  unnest(results) %>%
+  # Add temp_factor and precip_factor back in after unnesting
+  mutate(temp_factor = rep(sensitivity_grid$temp_factor, each = nrow(clim_inputs)),
+         precip_factor = rep(sensitivity_grid$precip_factor, each = nrow(clim_inputs)))
+```
+
+# Plot of yield anomaly by year with parameter uncertainty
+
+```{r}
+ggplot(sensitivity_results, aes(x = year, y = yield_anomaly, 
+                                group = interaction(temp_factor, 
+                                                    precip_factor))) +
+  geom_line(alpha = 0.3) +
+  stat_summary(fun = mean, geom = "line", color = "blue", size = 1.2) +
+  labs(title = "Yield Anomaly by Year under Parameter Uncertainty",
+    y = "Yield Anomaly",
+    x = "Year") +
+  theme_bw()
+```
+
+# Plot of yield anomaly sensitivity to parameters (mean across years)
+
+### Calculate mean yield anomaly
+
+```{r}
+summary_sensitivity <- sensitivity_results |>
+  group_by(temp_factor, precip_factor) |>
+  summarise(mean_yield_anomaly = mean(yield_anomaly), .groups = "drop")
+```
+
+### Graph
+
+```{r}
+ggplot(summary_sensitivity, aes(x = temp_factor, y = precip_factor, 
+                                fill = mean_yield_anomaly)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "plasma") +
+  labs(title = "Sensitivity of Yield Anomaly to Temperature and Precipitation", x = "Temperature Factor", y = "Precipitation Factor", 
+       fill = "Mean Yield Anomaly") +
+  theme_bw()
+```
