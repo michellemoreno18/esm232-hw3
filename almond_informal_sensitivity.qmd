@@ -1,0 +1,70 @@
+---
+title: "almond_informal_sensitivity"
+author: "Kyle Burt, Michelle Moreno"
+format: html
+editor: visual
+---
+
+# Libraries
+
+```{r}
+library(tidyverse)
+library(purrr)
+library(ggpubr)
+library(here)
+```
+
+# Load data
+
+```{r}
+clim <- read.table(here("data", "clim_04202025.txt"), 
+                   header = TRUE, sep = " ")
+```
+
+# Data management
+
+### Filter data
+
+```{r}
+filtered_clim <- clim |>
+  filter(month %in% c(1, 2)) |>
+  select(-wy, -tmax_c)
+```
+
+### Create data for total precipitation calculation
+
+```{r}
+jan_precip_summary <- filtered_clim |>
+  filter(month == 1) |>
+  group_by(year) |>
+  summarise(jan_precip = sum(precip, na.rm = TRUE), 
+            .groups = "drop")
+```
+
+### Create data for average minimum temperature calculation
+
+```{r}
+feb_TminC_summary <- filtered_clim |>
+  filter(month == 2) |>
+  group_by(year) |>
+  summarise(feb_tmin_c = mean(tmin_c, na.rm = TRUE), 
+            .groups = "drop")
+```
+
+### Join the two summaries
+
+```{r}
+clim_inputs <- left_join(feb_TminC_summary, jan_precip_summary, by = "year")
+```
+
+# Calculate almond yield anomaly for each year
+
+```{r}
+# source("R/updated_profit_almonds.R")
+
+# yield_profit_summary <- clim_inputs |>
+  # mutate(yield_anomaly = almond_yield(min_temp = feb_tmin_c, 
+                                      # P = jan_precip))
+```
+
+Perform a simple informal sensitivity analysis using at least 2 parameters (discount and price?)
