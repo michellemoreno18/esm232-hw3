@@ -140,3 +140,7 @@ ggplot(summary_sensitivity, aes(x = temp_factor, y = precip_factor,
        fill = "Mean Yield Anomaly") +
   theme_bw()
 ```
+
+# Interpretation
+
+Our model results show that almond yield anomalies vary from year to year and are sensitive to changes in February minimum temperature and January precipitation. The first plot illustrates how yield anomalies change across years under different parameter assumptions, highlighting that uncertainty in temperature and precipitation can cause noticeable variability in yields. The second plot shows that, on average, higher minimum temperatures and increased precipitation tend to lead to higher almond yields. Overall, our informal sensitivity analysis suggests that almond production is quite sensitive to small climate changes, emphasizing the importance of considering climatic variability when planning for future agricultural profitability.
