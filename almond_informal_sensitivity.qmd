@@ -60,11 +60,13 @@ clim_inputs <- left_join(feb_TminC_summary, jan_precip_summary, by = "year")
 # Calculate almond yield anomaly for each year
 
 ```{r}
-# source("R/updated_profit_almonds.R")
+source("R/combined_functions.R")
 
-# yield_profit_summary <- clim_inputs |>
-  # mutate(yield_anomaly = almond_yield(min_temp = feb_tmin_c, 
-                                      # P = jan_precip))
+yield_profit_summary <- compute_profit_fromyield(
+  min_temp = clim_inputs$feb_tmin_c,
+  P = clim_inputs$jan_precip,
+  year = clim_inputs$year
+)
 ```
 
-Perform a simple informal sensitivity analysis using at least 2 parameters (discount and price?)
+Perform a simple informal sensitivity analysis using at least 2 parameters (price and?)
