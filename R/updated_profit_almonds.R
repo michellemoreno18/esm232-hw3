@@ -10,7 +10,7 @@
 #' @return Data frame with estimate of change in profit
 compute_profit_fromyield <- function(min_temp, P, year, discount = 0.05) {
   
-  # Fixed almond price in $/ton (based on $1.76/lb)
+  # fixed almond price in $/ton (based on $1.76/lb)
   price <- 3520
   
   # compute yield anomaly using almond_yield function
