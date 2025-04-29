@@ -1,6 +1,7 @@
 ---
 title: "almond_informal_sensitivity"
 author: "Kyle Burt, Michelle Moreno"
+embed-resources: true
 format: html
 editor: visual
 ---
